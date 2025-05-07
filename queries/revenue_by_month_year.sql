@@ -28,7 +28,7 @@ FROM
 	(
 		SELECT 
 			order_id,
-			STRFTIME('%m', order_delivered_customer_date) AS month_no
+			STRFTIME('%m', order_delivered_customer_date) AS month_no,
 			STRFTIME('%Y', order_delivered_customer_date) AS year
 		FROM olist_orders
 		WHERE
