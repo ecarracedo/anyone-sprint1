@@ -9,7 +9,7 @@
 
 SELECT 
 	pcnt.product_category_name_english AS Category,
-	COUNT (DISTINCT(oo.order_id)) AS Num_Order,
+	COUNT (DISTINCT(oo.order_id)) AS Num_order,
 	SUM(oop.payment_value ) AS Revenue
 FROM (SELECT * FROM olist_orders oo WHERE order_status = 'delivered' AND oo.order_delivered_customer_date IS NOT NULL ) oo
 		JOIN olist_order_items ooi ON oo.order_id = ooi.order_id 

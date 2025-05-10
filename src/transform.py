@@ -225,9 +225,9 @@ def query_orders_per_day_and_holidays_2017(database: Engine) -> QueryResult:
     # DataFrame with the same data but converted to datetime.
     # We suggest you to read about how to use pd.to_datetime() for this.
 
-    orders['order_purchase_timestamp'] = orders['order_purchase_timestamp'].astype('datetime64[ns]').dt.date
 
-    # Convertir la columna a datetime (si aún no lo está)
+    # Convert column to datetime
+    orders['order_purchase_timestamp'] = orders['order_purchase_timestamp'].astype('datetime64[ns]').dt.date
     orders['order_purchase_timestamp'] = pd.to_datetime(orders['order_purchase_timestamp'] , format="%Y-%m-%d" )
     
     # TODO: Filtering only the order purchase timestamps from the year 2017.
@@ -243,24 +243,18 @@ def query_orders_per_day_and_holidays_2017(database: Engine) -> QueryResult:
     # each day.
     # Assign the result to the `order_purchase_ammount_per_date` variable.
     
-    # Agrupar por fecha (solo la parte de fecha, sin hora)
+    # Group by filtered_dates and count the number of orders per day
     order_purchase_ammount_per_date = filtered_dates.groupby(filtered_dates['order_purchase_timestamp'].dt.date).size().reset_index(name='order_count')
 
-    # Agregar columnas extra
+    # Convert holidays days format
+    holidays['date'] = holidays['date'].astype('datetime64[ns]').dt.date
+    holidays['date'] = pd.to_datetime(holidays['date'] , format="%Y-%m-%d" )
+
+    # Created date and holiday column and match with holidays
     order_purchase_ammount_per_date['date'] = pd.to_datetime(order_purchase_ammount_per_date['order_purchase_timestamp'])
+    order_purchase_ammount_per_date['holiday'] = order_purchase_ammount_per_date['date'].isin(holidays['date'])
 
-    # Crear un set de feriados
-    feriados_set = set(holidays['date'])
-
-    # Agrego la columna de feriados y comparo con el set de holidays
-    order_purchase_ammount_per_date['holiday'] = order_purchase_ammount_per_date['order_purchase_timestamp'].isin(feriados_set)
-
-    # Reordenar columnas
-    order_purchase_ammount_per_date = order_purchase_ammount_per_date[['order_purchase_timestamp', 'order_count', 'date', 'holiday']]
-
-
-
-     # TODO: Creating a dataframe with the result. Assign it to `result_df` variable.
+    # TODO: Creating a dataframe with the result. Assign it to `result_df` variable.
     # Now we will create the final DataFrame for the output.
     # This DataFrame must have 3 columns:
     #   - 'order_count': with the number of orders per day, you should be able to get

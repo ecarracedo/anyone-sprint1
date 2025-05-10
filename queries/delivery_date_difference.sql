@@ -11,13 +11,13 @@
 
 SELECT 
     customer_state AS State,
-    FLOOR(ROUND(AVG(CAST(
-        JULIANDAY(order_estimated_delivery_date) - JULIANDAY(order_delivered_customer_date)
-        AS INTEGER)),0)) AS Delivery_Difference
+    CAST(ROUND(AVG(
+        JULIANDAY(STRFTIME('%Y-%m-%d', order_estimated_delivery_date)) - JULIANDAY(order_delivered_customer_date)
+    ), 0) AS INTEGER) AS Delivery_Difference
 FROM olist_orders oo
 JOIN olist_customers oc ON oo.customer_id = oc.customer_id
 WHERE 
     order_status = 'delivered' 
     AND order_delivered_customer_date IS NOT NULL
 GROUP BY customer_state
-ORDER BY Delivery_Difference ASC
+ORDER BY Delivery_Difference ASC;

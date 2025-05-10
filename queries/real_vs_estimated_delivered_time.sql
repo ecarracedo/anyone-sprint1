@@ -31,24 +31,23 @@ SELECT
 		WHEN month_no = '11' THEN 'Nov'
 		WHEN month_no = '12' THEN 'Dec'
 	END AS month,
-	COALESCE(ROUND(AVG( CASE WHEN year == '2016' THEN real_time END), 6),'NaN') as Year2016_real_time,
-	COALESCE(ROUND(AVG( CASE WHEN year == '2017' THEN real_time END), 6),'NaN') as Year2017_real_time,
-	COALESCE(ROUND(AVG( CASE WHEN year == '2018' THEN real_time END), 6),'NaN') as Year2018_real_time,
-	COALESCE(ROUND(AVG( CASE WHEN year == '2016' THEN estimated_time END), 6),'NaN') as Year2016_estimated_time,
-	COALESCE(ROUND(AVG( CASE WHEN year == '2017' THEN estimated_time END), 6),'NaN') as Year2017_estimated_time,
-	COALESCE(ROUND(AVG( CASE WHEN year == '2018' THEN estimated_time END), 6),'NaN') as Year2018_estimated_time
-FROM
-	(
-		SELECT 
-			order_id,
-			(JULIANDAY(order_delivered_customer_date)-JULIANDAY(order_purchase_timestamp)) AS real_time,
-			(JULIANDAY(order_estimated_delivery_date)-JULIANDAY(order_purchase_timestamp)) AS estimated_time,
-			STRFTIME('%m', order_purchase_timestamp) AS month_no,
-			STRFTIME('%Y', order_purchase_timestamp) AS year
-		FROM olist_orders oo
-		WHERE
-			order_delivered_customer_date IS NOT NULL 
-			AND order_status = 'delivered'
-	)
-	GROUP BY month_no
-	
+	ROUND(AVG(CASE WHEN year = '2016' THEN real_time END), 6) AS Year2016_real_time,
+	ROUND(AVG(CASE WHEN year = '2017' THEN real_time END), 6) AS Year2017_real_time,
+	ROUND(AVG(CASE WHEN year = '2018' THEN real_time END), 6) AS Year2018_real_time,
+	ROUND(AVG(CASE WHEN year = '2016' THEN estimated_time END), 6) AS Year2016_estimated_time,
+	ROUND(AVG(CASE WHEN year = '2017' THEN estimated_time END), 6) AS Year2017_estimated_time,
+	ROUND(AVG(CASE WHEN year = '2018' THEN estimated_time END), 6) AS Year2018_estimated_time
+FROM (
+	SELECT 
+		order_id,
+		(JULIANDAY(order_delivered_customer_date) - JULIANDAY(order_purchase_timestamp)) AS real_time,
+		(JULIANDAY(order_estimated_delivery_date) - JULIANDAY(order_purchase_timestamp)) AS estimated_time,
+		STRFTIME('%m', order_purchase_timestamp) AS month_no,
+		STRFTIME('%Y', order_purchase_timestamp) AS year
+	FROM olist_orders oo
+	WHERE
+		order_delivered_customer_date IS NOT NULL 
+		AND order_status = 'delivered'
+)
+GROUP BY month_no
+ORDER BY month_no;
