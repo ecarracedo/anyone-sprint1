@@ -5,6 +5,10 @@
 # Ignorar carpetas
 .venv/
 dataset/
+__pycache__/
 
 # Ignorar archivos
 olist.db
+*.pyc
+*.pyo
+*.pyd   
