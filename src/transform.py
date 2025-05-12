@@ -225,35 +225,17 @@ def query_orders_per_day_and_holidays_2017(database: Engine) -> QueryResult:
     # DataFrame with the same data but converted to datetime.
     # We suggest you to read about how to use pd.to_datetime() for this.
 
-
-    # Convert column to datetime
-    orders['order_purchase_timestamp'] = orders['order_purchase_timestamp'].astype('datetime64[ns]').dt.date
-    orders['order_purchase_timestamp'] = pd.to_datetime(orders['order_purchase_timestamp'] , format="%Y-%m-%d" )
-    
     # TODO: Filtering only the order purchase timestamps from the year 2017.
     # Using the `orders` DataFrame, apply a boolean mask for retrieving all the
     # columns but only the rows corresponding to the year 2017.
     # Assign the result to a new variable called `filtered_dates`.
-
-    # Filtrar por el año 2017
-    filtered_dates = orders[orders['order_purchase_timestamp'].dt.year == 2017]
 
     # TODO: Counting the orders per day.
     # Using the `filtered_dates` DataFrame, count how many orders were made on
     # each day.
     # Assign the result to the `order_purchase_ammount_per_date` variable.
     
-    # Group by filtered_dates and count the number of orders per day
-    order_purchase_ammount_per_date = filtered_dates.groupby(filtered_dates['order_purchase_timestamp'].dt.date).size().reset_index(name='order_count')
-
-    # Convert holidays days format
-    holidays['date'] = holidays['date'].astype('datetime64[ns]').dt.date
-    holidays['date'] = pd.to_datetime(holidays['date'] , format="%Y-%m-%d" )
-
-    # Created date and holiday column and match with holidays
-    order_purchase_ammount_per_date['date'] = pd.to_datetime(order_purchase_ammount_per_date['order_purchase_timestamp'])
-    order_purchase_ammount_per_date['holiday'] = order_purchase_ammount_per_date['date'].isin(holidays['date'])
-
+    
     # TODO: Creating a dataframe with the result. Assign it to `result_df` variable.
     # Now we will create the final DataFrame for the output.
     # This DataFrame must have 3 columns:
@@ -263,9 +245,23 @@ def query_orders_per_day_and_holidays_2017(database: Engine) -> QueryResult:
     #   - 'holiday': boolean column having True when that date is a holiday or,
     #                False otherwise. Use the `holidays` DataFrame for this.
     
+    # Convert order_purchase_timestamp to datetime
+    orders['order_purchase_timestamp'] = pd.to_datetime(orders['order_purchase_timestamp'])
+
+    # Create a new column with the date only
+    orders['date'] = orders['order_purchase_timestamp'].dt.normalize() 
+
+    # Filter orders for the year 2017
+    filtered_orders = orders[orders['date'].dt.year == 2017]
+
+    # Group by date and count the number of orders
+    order_purchase_ammount_per_date = filtered_orders.groupby('date').size().reset_index(name='order_count')
+
+    # Match holidays with the orders
+    order_purchase_ammount_per_date['holiday'] = order_purchase_ammount_per_date['date'].isin(holidays['date'])
+
     # Create the final DataFrame    
     result_df = order_purchase_ammount_per_date
-
     print(result_df.head())
 
     # Keep the code below as it is, this will return the result from
