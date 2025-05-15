@@ -3,6 +3,8 @@
 *.tmp
 
 # Ignorar carpetas
+capturas/
+.vscode/
 .venv/
 dataset/
 __pycache__/
