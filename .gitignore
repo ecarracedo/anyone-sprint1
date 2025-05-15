@@ -8,10 +8,12 @@ capturas/
 .venv/
 dataset/
 __pycache__/
+.pytest_cache/
 
 # Ignorar archivos
 olist.db
 *.pyc
 *.pyo
 *.pyd   
-Sprint_01-Emiliano_Carracedo.zip
+.python-version
+test_queries_quickly.ipynb
